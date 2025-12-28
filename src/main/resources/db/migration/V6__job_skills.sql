@@ -1,0 +1,10 @@
+CREATE TABLE skills (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE job_skills (
+  job_id BIGINT REFERENCES jobs(id) ON DELETE CASCADE,
+  skill_id BIGINT REFERENCES skills(id) ON DELETE CASCADE,
+  PRIMARY KEY (job_id, skill_id)
+);

@@ -1,0 +1,10 @@
+CREATE TABLE job_tags (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE job_tag_map (
+  job_id BIGINT REFERENCES jobs(id) ON DELETE CASCADE,
+  tag_id BIGINT REFERENCES job_tags(id) ON DELETE CASCADE,
+  PRIMARY KEY (job_id, tag_id)
+);
