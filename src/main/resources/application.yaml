@@ -18,3 +18,8 @@ logging:
     org.flywaydb: DEBUG
     org.springframework.boot.autoconfigure: DEBUG
 
+jwt:
+  secret: a3f9c7e2d1b84f6a9c0e5b7d2a8f4e6c9b1d7a3f8e5c2a9
+  access-token-expiry: 900      # 15 min
+  refresh-token-expiry: 604800  # 7 days
+
