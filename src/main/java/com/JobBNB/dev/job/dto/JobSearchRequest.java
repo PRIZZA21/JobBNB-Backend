@@ -1,5 +1,9 @@
 package com.JobBNB.dev.job.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class JobSearchRequest {
     
     private String keyword;

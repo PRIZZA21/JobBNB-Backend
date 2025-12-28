@@ -1,0 +1,7 @@
+ALTER TABLE jobs
+ADD COLUMN created_by BIGINT NOT NULL;
+
+ALTER TABLE jobs
+ADD CONSTRAINT fk_job_user
+FOREIGN KEY (created_by)
+REFERENCES users(id);

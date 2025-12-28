@@ -2,6 +2,9 @@ package com.JobBNB.dev.job.dto;
 
 import java.time.Instant;
 
+import lombok.Getter;
+import lombok.Setter;
+@Getter @Setter
 public class JobResponse {
     
     private Long id;
@@ -18,4 +21,7 @@ public class JobResponse {
     private Boolean isActive;
 
     private Instant createdAt;
+    private Long createdById;
+    private String createdByName;
+    
 }
