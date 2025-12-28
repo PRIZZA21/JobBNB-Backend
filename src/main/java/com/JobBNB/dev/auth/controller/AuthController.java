@@ -10,9 +10,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
@@ -20,6 +23,7 @@ public class AuthController {
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(
             @Valid @RequestBody LoginRequest request) {
+        log.info("Login API called for email: {}", request.getEmail());
         return ApiResponse.success(
                 "Login successful",
                 authService.login(request));
@@ -27,6 +31,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+        log.info("Register API called for email: {}", request.getEmail());
         return ApiResponse.success(
                 "Register successful",
                 authService.register(request));
@@ -35,6 +40,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public AuthResponse refreshToken(
             @RequestBody RefreshTokenRequest request) {
+        log.info("Refresh token API called");
         return authService.refreshAccessToken(request.getRefreshToken());
     }
 }
