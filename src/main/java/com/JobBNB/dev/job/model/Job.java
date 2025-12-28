@@ -1,4 +1,4 @@
-package com.JobBNB.dev.model;
+package com.JobBNB.dev.job.model;
 
 import java.time.Instant;
 

@@ -1,4 +1,4 @@
-package com.JobBNB.dev.dto.job;
+package com.JobBNB.dev.job.dto;
 
 public class JobSearchRequest {
     

@@ -1,9 +1,10 @@
-package com.JobBNB.dev.repository;
+package com.JobBNB.dev.job.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.JobBNB.dev.model.Job;
+
+import com.JobBNB.dev.job.model.Job;
 
 public interface JobRepository extends JpaRepository<Job, Long> {
 

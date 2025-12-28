@@ -1,20 +1,21 @@
-package com.JobBNB.dev.dto.job;
+package com.JobBNB.dev.job.dto;
 
-import jakarta.validation.constraints.Size;
+import java.time.Instant;
 
-public class UpdateJobRequest {
+public class JobResponse {
+    
+    private Long id;
 
-    @Size(max = 150)
     private String title;
-
     private String description;
 
     private String location;
-
     private String employmentType;
 
     private Integer minSalary;
     private Integer maxSalary;
 
     private Boolean isActive;
+
+    private Instant createdAt;
 }
