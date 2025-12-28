@@ -17,6 +17,8 @@ import com.JobBNB.dev.user.model.User;
 import com.JobBNB.dev.user.model.Role;
 import com.JobBNB.dev.user.repository.RoleRepository;
 import com.JobBNB.dev.user.repository.UserRepository;
+import com.JobBNB.dev.auth.model.RefreshToken;
+import com.JobBNB.dev.auth.repository.RefreshTokenRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,8 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private final JwtUtil jwtUtil;
 
@@ -38,12 +42,14 @@ public class AuthService {
             throw new BusinessException("Invalid credentials");
         }
 
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
         AuthResponse response = new AuthResponse();
         response.setAccessToken(
                 jwtUtil.generateAccessToken(
                         user.getId(),
                         user.getRole().getName()));
-        response.setRefreshToken("TEMP_REFRESH");
+        response.setRefreshToken(refreshToken.getToken());
 
         return response;
     }
@@ -56,8 +62,8 @@ public class AuthService {
         }
 
         // Get USER role
-        Role role = roleRepository.findByName("USER")
-                .orElseThrow(() -> new BusinessException("Role USER not found"));
+        Role role = roleRepository.findByName(request.getRole())
+                .orElseThrow(() -> new BusinessException("Role " + request.getRole() + " not found"));
 
         // Create user
         User user = new User();
@@ -70,15 +76,36 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(savedUser);
+
         // AUTO LOGIN (JWT generation – temp for now)
         AuthResponse response = new AuthResponse();
         response.setAccessToken(
                 jwtUtil.generateAccessToken(
                         savedUser.getId(),
                         savedUser.getRole().getName()));
-        response.setRefreshToken("TEMP_REFRESH_" + savedUser.getId());
+        response.setRefreshToken(refreshToken.getToken());
 
         return response;
     }
 
+    public AuthResponse refreshAccessToken(String token) {
+
+        RefreshToken refreshToken = refreshTokenRepository
+                .findByToken(token)
+                .orElseThrow(() -> new BusinessException("Invalid refresh token"));
+
+        refreshTokenService.verifyExpiration(refreshToken);
+
+        User user = refreshToken.getUser();
+
+        AuthResponse response = new AuthResponse();
+        response.setAccessToken(
+                jwtUtil.generateAccessToken(
+                        user.getId(),
+                        user.getRole().getName()));
+        response.setRefreshToken(token); // same refresh token
+
+        return response;
+    }
 }

@@ -1,6 +1,7 @@
 package com.JobBNB.dev.auth.controller;
 
 import com.JobBNB.dev.auth.dto.LoginRequest;
+import com.JobBNB.dev.auth.dto.RefreshTokenRequest;
 import com.JobBNB.dev.auth.dto.RegisterRequest;
 import com.JobBNB.dev.auth.dto.AuthResponse;
 import com.JobBNB.dev.auth.service.AuthService;
@@ -31,4 +32,9 @@ public class AuthController {
                 authService.register(request));
     }
 
+    @PostMapping("/refresh")
+    public AuthResponse refreshToken(
+            @RequestBody RefreshTokenRequest request) {
+        return authService.refreshAccessToken(request.getRefreshToken());
+    }
 }
