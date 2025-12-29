@@ -23,6 +23,10 @@ public class JobResponse {
     private Boolean isActive;
 
     private Instant createdAt;
+
     private Long createdById;
+    
     private String createdByName;
+
+    private String testUrl;
 }

@@ -21,4 +21,6 @@ public class UpdateJobRequest {
     private Integer maxSalary;
 
     private Boolean isActive;
+
+    private String testUrl;
 }

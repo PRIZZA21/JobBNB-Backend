@@ -20,6 +20,7 @@ public class JobMapper {
         dto.setCreatedAt(job.getCreatedAt());
         dto.setCreatedById(job.getCreatedBy().getId());
         dto.setCreatedByName(job.getCreatedBy().getName());
+        dto.setTestUrl(job.getTestUrl());
         return dto;
     }
 }

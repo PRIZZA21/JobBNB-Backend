@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.JobBNB.dev.job.model.Job;
 import java.util.List;
+import java.util.Optional;
 
 public interface JobRepository extends JpaRepository<Job, Long> {
 
@@ -14,4 +15,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
             String location, Pageable pageable);
 
     List<Job> findByCreatedById(Long userId);
+    
+    Optional<Job> findById(Long jobId);
 }

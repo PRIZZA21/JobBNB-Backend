@@ -28,4 +28,7 @@ public class CreateJobRequest {
 
     @NotNull
     private Integer maxSalary;
+
+    @NotNull
+    private String testUrl;
 }

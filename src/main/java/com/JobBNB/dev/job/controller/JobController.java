@@ -61,4 +61,12 @@ public class JobController {
         return ApiResponse.success(response);
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/{id}")
+    public ApiResponse<JobResponse> getJob(@PathVariable Long id) {
+        log.info("Received request to fetch job ID: {}", id);
+        JobResponse response = jobService.getJob(id);
+        return ApiResponse.success(response);
+    }
+
 }

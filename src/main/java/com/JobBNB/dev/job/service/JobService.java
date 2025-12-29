@@ -52,6 +52,7 @@ public class JobService {
                 page.getContent()
                         .stream()
                         .map(JobMapper::toResponse)
+                        .peek(dto -> dto.setTestUrl(null))
                         .collect(Collectors.toList()),
                 pageable,
                 page.getTotalElements());
@@ -76,6 +77,7 @@ public class JobService {
         job.setCreatedAt(Instant.now());
         job.setUpdatedAt(Instant.now());
         job.setCreatedBy(employer);
+        job.setTestUrl(request.getTestUrl());
 
         Job saved = jobRepository.save(job);
         return JobMapper.toResponse(saved);
@@ -114,6 +116,9 @@ public class JobService {
 
         if (request.getIsActive() != null)
             job.setIsActive(request.getIsActive());
+ 
+        if(request.getTestUrl() != null)
+            job.setTestUrl(request.getTestUrl());
 
         job.setUpdatedAt(Instant.now());
 
@@ -132,5 +137,11 @@ public class JobService {
                 .stream()
                 .map(JobMapper::toResponse)
                 .toList();
+    }
+
+    public JobResponse getJob(Long jobId) {
+        return jobRepository.findById(jobId)
+                .map(JobMapper::toResponse)
+                .orElseThrow(() -> new BusinessException("Job not found"));
     }
 }
