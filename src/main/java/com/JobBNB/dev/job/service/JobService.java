@@ -25,6 +25,8 @@ import com.JobBNB.dev.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.JobBNB.dev.job.specification.JobSpecification;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -38,15 +40,9 @@ public class JobService {
                 request.getSize(),
                 Sort.by("createdAt").descending());
 
-        Page<Job> page;
-
-        if (request.getLocation() != null && !request.getLocation().isBlank()) {
-            page = jobRepository.findByLocationAndIsActiveTrue(
-                    request.getLocation(),
-                    pageable);
-        } else {
-            page = jobRepository.findByIsActiveTrue(pageable);
-        }
+        Page<Job> page = jobRepository.findAll(
+                JobSpecification.filterJobs(request),
+                pageable);
 
         return new PageImpl<>(
                 page.getContent()
@@ -120,8 +116,8 @@ public class JobService {
         if(request.getTestUrl() != null)
             job.setTestUrl(request.getTestUrl());
 
-        job.setUpdatedAt(Instant.now());
 
+         
         Job updated = jobRepository.save(job);
         return JobMapper.toResponse(updated);
     }
