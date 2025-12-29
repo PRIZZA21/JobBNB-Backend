@@ -38,9 +38,11 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public AuthResponse refreshToken(
+    public ApiResponse<AuthResponse> refreshToken(
             @RequestBody RefreshTokenRequest request) {
         log.info("Refresh token API called");
-        return authService.refreshAccessToken(request.getRefreshToken());
+        return ApiResponse.success(
+                "Register successful",
+                authService.refreshAccessToken(request.getRefreshToken()));
     }
 }

@@ -26,5 +26,9 @@ public class RegisterRequest {
 
     @NotBlank
     private String role;
-}
 
+    private String linkedinUrl;
+    private String resumeUrl;
+    private String companyUrl;
+
+}

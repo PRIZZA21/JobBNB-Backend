@@ -33,4 +33,14 @@ public class User {
 
     @Column(name = "created_at")
     private Instant createdAt;
+
+    @Column(name = "linkedin_url")
+    private String linkedinUrl;
+
+    @Column(name = "resume_url")
+    private String resumeUrl;
+
+    @Column(name = "company_url")
+    private String companyUrl;
+
 }

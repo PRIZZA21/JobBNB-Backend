@@ -74,6 +74,24 @@ public class AuthService {
         user.setRole(role);
         user.setCreatedAt(Instant.now());
 
+        if (role.getName().equals("USER")) {
+
+                if (request.getResumeUrl() == null) {
+                        throw new BusinessException("Resume URL is required for USER");
+                }
+
+                user.setLinkedinUrl(request.getLinkedinUrl());
+                user.setResumeUrl(request.getResumeUrl());
+
+        } else if (role.getName().equals("EMPLOYER")) {
+
+                if (request.getCompanyUrl() == null) {
+                        throw new BusinessException("Company URL is required for EMPLOYER");
+                }
+
+                user.setCompanyUrl(request.getCompanyUrl());
+        }
+
         User savedUser = userRepository.save(user);
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(savedUser);

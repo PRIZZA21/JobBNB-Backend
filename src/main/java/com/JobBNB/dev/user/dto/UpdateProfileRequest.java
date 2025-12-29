@@ -1,0 +1,18 @@
+package com.JobBNB.dev.user.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class UpdateProfileRequest {
+    private String name;
+    private String email;
+
+    // USER
+    private String linkedinUrl;
+    private String resumeUrl;
+
+    // EMPLOYER
+    private String companyUrl;
+}
