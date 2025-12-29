@@ -24,11 +24,21 @@ public class CreateJobRequest {
     private String employmentType; // FULL_TIME, PART_TIME, CONTRACT
 
     @NotNull
+    @jakarta.validation.constraints.Min(0)
     private Integer minSalary;
 
     @NotNull
+    @jakarta.validation.constraints.Min(0)
     private Integer maxSalary;
 
     @NotNull
     private String testUrl;
+
+    @jakarta.validation.constraints.AssertTrue(message = "Minimum salary cannot be greater than maximum salary")
+    public boolean isSalaryRangeValid() {
+        if (minSalary == null || maxSalary == null) {
+            return true; // Handled by @NotNull
+        }
+        return minSalary <= maxSalary;
+    }
 }

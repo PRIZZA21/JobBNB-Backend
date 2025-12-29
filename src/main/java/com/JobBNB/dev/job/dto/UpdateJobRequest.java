@@ -17,7 +17,9 @@ public class UpdateJobRequest {
 
     private String employmentType;
 
+    @jakarta.validation.constraints.Min(0)
     private Integer minSalary;
+    @jakarta.validation.constraints.Min(0)
     private Integer maxSalary;
 
     private Boolean isActive;

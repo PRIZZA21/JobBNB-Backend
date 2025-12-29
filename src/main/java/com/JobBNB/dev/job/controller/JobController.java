@@ -31,7 +31,7 @@ public class JobController {
     private final JobService jobService;
 
     @GetMapping
-    public ApiResponse<Page<JobResponse>> listJobs(JobSearchRequest request) {
+    public ApiResponse<Page<JobResponse>> listJobs(@Valid JobSearchRequest request) {
         log.info("Received request to list jobs with filters: {}", request);
         Page<JobResponse> result = jobService.listJobs(request);
         return ApiResponse.success(result);

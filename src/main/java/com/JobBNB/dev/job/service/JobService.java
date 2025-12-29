@@ -112,12 +112,15 @@ public class JobService {
 
         if (request.getIsActive() != null)
             job.setIsActive(request.getIsActive());
- 
-        if(request.getTestUrl() != null)
+
+        if (request.getTestUrl() != null)
             job.setTestUrl(request.getTestUrl());
 
+        if (job.getMinSalary() > job.getMaxSalary()) {
+            throw new BusinessException("Minimum salary cannot be greater than maximum salary");
+        }
 
-         
+        job.setUpdatedAt(Instant.now());
         Job updated = jobRepository.save(job);
         return JobMapper.toResponse(updated);
     }

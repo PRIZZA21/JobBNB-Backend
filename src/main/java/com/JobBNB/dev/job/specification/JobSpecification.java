@@ -35,11 +35,13 @@ public class JobSpecification {
             }
 
             if (request.getMinSalary() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("minSalary"), request.getMinSalary()));
+                // Job is eligible if its maximum pay is at least what the user wants as minimum
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("maxSalary"), request.getMinSalary()));
             }
 
             if (request.getMaxSalary() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("maxSalary"), request.getMaxSalary()));
+                // Job is eligible if its minimum pay starts at or below the user's maximum cap
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("minSalary"), request.getMaxSalary()));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
