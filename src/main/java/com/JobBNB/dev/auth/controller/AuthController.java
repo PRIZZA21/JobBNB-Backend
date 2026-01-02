@@ -1,5 +1,6 @@
 package com.JobBNB.dev.auth.controller;
 
+import com.JobBNB.dev.auth.dto.GoogleLoginRequest;
 import com.JobBNB.dev.auth.dto.LoginRequest;
 import com.JobBNB.dev.auth.dto.RefreshTokenRequest;
 import com.JobBNB.dev.auth.dto.RegisterRequest;
@@ -29,6 +30,15 @@ public class AuthController {
                 authService.login(request));
     }
 
+    @PostMapping("/google")
+    public ApiResponse<AuthResponse> googleLogin(
+            @Valid @RequestBody GoogleLoginRequest request) {
+        log.info("Google Login API called");
+        return ApiResponse.success(
+                "Google login successful",
+                authService.googleLogin(request));
+    }
+
     @PostMapping("/register")
     public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         log.info("Register API called for email: {}", request.getEmail());
@@ -42,7 +52,14 @@ public class AuthController {
             @RequestBody RefreshTokenRequest request) {
         log.info("Refresh token API called");
         return ApiResponse.success(
-                "Register successful",
+                "Token refreshed successfully",
                 authService.refreshAccessToken(request.getRefreshToken()));
+    }
+
+    @GetMapping("/verify")
+    public ApiResponse<AuthResponse> verifyEmail(@RequestParam String token) {
+        log.info("Email verification called with token");
+        return ApiResponse.success("Email verified successfully! You are now logged in.",
+                authService.verifyEmail(token));
     }
 }

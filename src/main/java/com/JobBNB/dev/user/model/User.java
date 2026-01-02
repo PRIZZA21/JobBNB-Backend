@@ -43,4 +43,10 @@ public class User {
     @Column(name = "company_url")
     private String companyUrl;
 
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified = false;
+
+    @Column(name = "verification_token")
+    private String verificationToken;
+
 }
