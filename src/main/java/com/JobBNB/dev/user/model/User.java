@@ -49,4 +49,9 @@ public class User {
     @Column(name = "verification_token")
     private String verificationToken;
 
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_expiry")
+    private Instant passwordResetExpiry;
 }

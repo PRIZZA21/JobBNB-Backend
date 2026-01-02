@@ -3,6 +3,8 @@ package com.JobBNB.dev.auth.service;
 import com.JobBNB.dev.auth.dto.LoginRequest;
 import com.JobBNB.dev.auth.dto.RegisterRequest;
 import com.JobBNB.dev.auth.dto.AuthResponse;
+import com.JobBNB.dev.auth.dto.ForgotPasswordRequest;
+import com.JobBNB.dev.auth.dto.ResetPasswordRequest;
 import com.JobBNB.dev.common.exception.BusinessException;
 import com.JobBNB.dev.common.util.JwtUtil;
 
@@ -44,6 +46,34 @@ public class AuthService {
         @org.springframework.beans.factory.annotation.Value("${app.google.client-id}")
         private String googleClientId;
 
+        public void forgotPassword(ForgotPasswordRequest request) {
+                User user = userRepository.findByEmail(request.getEmail())
+                                .orElseThrow(() -> new BusinessException(
+                                                "If an account exists with this email, you will receive a reset link shortly."));
+
+                String token = java.util.UUID.randomUUID().toString();
+                user.setPasswordResetToken(token);
+                user.setPasswordResetExpiry(Instant.now().plus(java.time.Duration.ofHours(1)));
+                userRepository.save(user);
+
+                mailService.sendPasswordResetEmail(user.getEmail(), token);
+        }
+
+        public void resetPassword(ResetPasswordRequest request) {
+                User user = userRepository.findByPasswordResetToken(request.getToken())
+                                .orElseThrow(() -> new BusinessException("Invalid or expired reset token"));
+
+                if (user.getPasswordResetExpiry().isBefore(Instant.now())) {
+                        throw new BusinessException("Reset token has expired");
+                }
+
+                user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+                user.setIsVerified(true); // If they can reset password via email, they are verified owners
+                user.setPasswordResetToken(null);
+                user.setPasswordResetExpiry(null);
+                userRepository.save(user);
+        }
+
         public AuthResponse googleLogin(GoogleLoginRequest request) {
                 try {
                         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
@@ -61,7 +91,6 @@ public class AuthService {
                         String name = (String) payload.get("name");
 
                         User user = userRepository.findByEmail(email).orElseGet(() -> {
-                                // Create new user if not exists
                                 Role role = roleRepository.findByName(request.getRole())
                                                 .orElseThrow(() -> new BusinessException(
                                                                 "Role " + request.getRole() + " not found"));
@@ -70,11 +99,9 @@ public class AuthService {
                                 newUser.setEmail(email);
                                 newUser.setName(name);
                                 newUser.setRole(role);
-                                newUser.setIsVerified(true); // Google emails are already verified
+                                newUser.setIsVerified(true);
                                 newUser.setIsActive(true);
                                 newUser.setCreatedAt(Instant.now());
-                                // For social login, we can set a random password or leave it null if handled by
-                                // security
                                 newUser.setPasswordHash(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
                                 return userRepository.save(newUser);
                         });
@@ -100,36 +127,26 @@ public class AuthService {
                         throw new BusinessException("Please verify your email before logging in.");
                 }
 
-                if (!passwordEncoder.matches(
-                                request.getPassword(),
-                                user.getPasswordHash())) {
+                if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
                         throw new BusinessException("Invalid credentials");
                 }
 
                 RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
                 AuthResponse response = new AuthResponse();
-                response.setAccessToken(
-                                jwtUtil.generateAccessToken(
-                                                user.getId(),
-                                                user.getRole().getName()));
+                response.setAccessToken(jwtUtil.generateAccessToken(user.getId(), user.getRole().getName()));
                 response.setRefreshToken(refreshToken.getToken());
-
                 return response;
         }
 
         public AuthResponse register(RegisterRequest request) {
-
-                // Check email
                 if (userRepository.existsByEmail(request.getEmail())) {
                         throw new BusinessException("Email already registered");
                 }
 
-                // Get role
                 Role role = roleRepository.findByName(request.getRole())
                                 .orElseThrow(() -> new BusinessException("Role " + request.getRole() + " not found"));
 
-                // Create user
                 User user = new User();
                 user.setName(request.getName());
                 user.setEmail(request.getEmail());
@@ -141,11 +158,8 @@ public class AuthService {
                 user.setVerificationToken(java.util.UUID.randomUUID().toString());
 
                 User savedUser = userRepository.save(user);
-
-                // Send email
                 mailService.sendVerificationEmail(savedUser.getEmail(), savedUser.getVerificationToken());
 
-                // We don't return tokens yet because they need to verify first
                 AuthResponse response = new AuthResponse();
                 response.setMessage("Registration successful! Please check your email to verify your account.");
                 return response;
@@ -159,37 +173,24 @@ public class AuthService {
                 user.setVerificationToken(null);
                 userRepository.save(user);
 
-                // Create tokens for automatic login
                 RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
-
                 AuthResponse response = new AuthResponse();
-                response.setAccessToken(
-                                jwtUtil.generateAccessToken(
-                                                user.getId(),
-                                                user.getRole().getName()));
+                response.setAccessToken(jwtUtil.generateAccessToken(user.getId(), user.getRole().getName()));
                 response.setRefreshToken(refreshToken.getToken());
                 response.setMessage("Email verified and logged in successfully!");
-
                 return response;
         }
 
         public AuthResponse refreshAccessToken(String token) {
-
-                RefreshToken refreshToken = refreshTokenRepository
-                                .findByToken(token)
+                RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
                                 .orElseThrow(() -> new BusinessException("Invalid refresh token"));
 
                 refreshTokenService.verifyExpiration(refreshToken);
-
                 User user = refreshToken.getUser();
 
                 AuthResponse response = new AuthResponse();
-                response.setAccessToken(
-                                jwtUtil.generateAccessToken(
-                                                user.getId(),
-                                                user.getRole().getName()));
-                response.setRefreshToken(token); // same refresh token
-
+                response.setAccessToken(jwtUtil.generateAccessToken(user.getId(), user.getRole().getName()));
+                response.setRefreshToken(token);
                 return response;
         }
 }

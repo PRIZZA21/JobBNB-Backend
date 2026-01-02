@@ -1,9 +1,11 @@
 package com.JobBNB.dev.auth.controller;
 
+import com.JobBNB.dev.auth.dto.ForgotPasswordRequest;
 import com.JobBNB.dev.auth.dto.GoogleLoginRequest;
 import com.JobBNB.dev.auth.dto.LoginRequest;
 import com.JobBNB.dev.auth.dto.RefreshTokenRequest;
 import com.JobBNB.dev.auth.dto.RegisterRequest;
+import com.JobBNB.dev.auth.dto.ResetPasswordRequest;
 import com.JobBNB.dev.auth.dto.AuthResponse;
 import com.JobBNB.dev.auth.service.AuthService;
 import com.JobBNB.dev.common.response.ApiResponse;
@@ -54,6 +56,20 @@ public class AuthController {
         return ApiResponse.success(
                 "Token refreshed successfully",
                 authService.refreshAccessToken(request.getRefreshToken()));
+    }
+
+    @PostMapping("/forgot-password")
+    public ApiResponse<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        log.info("Forgot password request for email: {}", request.getEmail());
+        authService.forgotPassword(request);
+        return ApiResponse.success("If an account exists, a reset link has been sent to your email.");
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        log.info("Password reset request received");
+        authService.resetPassword(request);
+        return ApiResponse.success("Password has been reset successfully. You can now login with your new password.");
     }
 
     @GetMapping("/verify")

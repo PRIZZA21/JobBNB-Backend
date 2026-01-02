@@ -28,4 +28,18 @@ public class MailService {
         mailSender.send(message);
         log.info("Verification email sent to {}", to);
     }
+
+    public void sendPasswordResetEmail(String to, String token) {
+        String resetUrl = frontendUrl + "/reset-password?token=" + token;
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Reset your JobBNB Password");
+        message.setText(
+                "You requested to reset your password. Click the link below to set a new password. This link will expire in 1 hour:\n\n"
+                        + resetUrl);
+
+        mailSender.send(message);
+        log.info("Password reset email sent to {}", to);
+    }
 }
